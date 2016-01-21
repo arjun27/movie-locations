@@ -19,29 +19,27 @@ html, body {
   padding-top: 10px;
   padding-bottom: 10px;
   width: 100%;
-  background-color: #2d3e50;
+  background-color: rgba(45, 62, 80, 0.8);
   color: #fff;
-  opacity: 0.8;
 }
 
 #message_bar {
   width: 100%;
-  background-color: #1f8dd6;
+  background-color: rgba(31, 141, 214, 0.8);
   color: #fff;
   padding-top: 10px;
   padding-bottom: 10px;
-  opacity: 0.8;
+  display: none;
 }
 
 #selected_movies {
-  background-color: #000;
+  background-color: rgba(45, 62, 80, 0.8);
   height: 150px;
   margin-bottom: 0;
   position: absolute;
   z-index: 10;
   bottom: 0;
   width: 100%;
-  opacity: 0.8;
   overflow-x: scroll;
   overflow-y: hidden;
 }
@@ -63,4 +61,12 @@ ul.movie_list li {
 
 .movie_poster {
   padding-top: 10px;
+}
+
+.red_border {
+  border: 2px solid #F7584C;
+}
+
+.blue_border {
+  border: 2px solid #6991FD;
 }

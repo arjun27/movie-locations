@@ -1,17 +1,27 @@
 var map;
 var markers = new Array();
 var movies_count = 0;
-var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var titles = [];
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: 12,
-    center: {lat: 37.769, lng: -122.446}
+    center: {lat: 37.769, lng: -122.446},
+    disableDefaultUI: true,
+    zoomControl: true,
+    zoomControlOptions: {
+        position: google.maps.ControlPosition.RIGHT_CENTER
+    },
   });
 
   document.getElementById('submit').addEventListener('click', function() { 
     var title = document.getElementById('search_text').value;
     searchListener (title);
+  });
+
+  document.getElementById('search_text').addEventListener('click', function() {
+    $('#search_text').val('');
+    $('#message_bar').hide();
   });
 
   populateAutocomplete();
@@ -29,8 +39,6 @@ function searchListener (title) {
   var get2 = $.get(pic_api_url);
 
   $.when(get1, get2).done(function(data1, data2) {
-    // TODO: check if data is empty and status is 200 => movie does not exist
-    console.log(data2);
     var pic_url = '';
     if (data2[0]['results'].length > 0) {
       var poster_path = data2[0]['results'][0]['poster_path'];
@@ -42,21 +50,23 @@ function searchListener (title) {
       pic_url = 'images/default.png';
     }
 
-    console.log(data1);
-
-    var i;
-    for (i = 0; i < data1[0].length; i++) {
-      var address = data1[0][i]['locations'] + ', San Francisco';
-      setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
+    if (!data1[0][0]) {
+      messageBox(title, true);
+    } else if (!messageBox (title, data1[0][0]['locations'])) {
+      var i;
+      for (i = 0; i < data1[0].length; i++) {
+        var address = data1[0][i]['locations'] + ', San Francisco';
+        setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
+      }
+      var elem_id = 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), '');
+      // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
+      var html = '<li> <img src="' + pic_url + '" alt="' + title + '" onclick="bounceMarkers(\'' + title + '\');" /> </li>';
+      console.log(html);
+      // $('#selected_movies').append(html);
+      $('.movie_list').append(html)
+      movies_count += 1;
+      $('.movie_list').width(movies_count * 120);
     }
-    var elem_id = 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), '');
-    // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
-    var html = '<li> <img src="' + pic_url + '" alt="' + title + '" onclick="bounceMarkers(\'' + title + '\');" /> </li>';
-    console.log(html);
-    // $('#selected_movies').append(html);
-    $('.movie_list').append(html)
-    movies_count += 1;
-    $('.movie_list').width(movies_count * 120);
   }); // TODO: done() error handling?
 }
 
@@ -97,7 +107,6 @@ function deleteMarkers (title) {
 
 function populateAutocomplete () {
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?$select=title&$group=title';
-  var titles = [];
   $.get(api_url, function(data, status) {
     console.log(status);
     var i;
@@ -110,6 +119,32 @@ function populateAutocomplete () {
   });
 }
 
+function messageBox (title, locations) {
+  console.log('messageBox title', title);
+  var error = false;
+  var msg = '';
+  if (!locations) {
+    error = true;
+    msg = 'Shot in SF, but no locations.';
+  } else {
+    if (titles.indexOf(title) >= 0) {
+      if (title in markers) {
+        error = true;
+        msg = 'Already selected.';
+      } 
+    } else {
+      error = true;
+      msg = 'Not shot in SF.';
+    }
+  }
+  if (error) {
+    console.log(error);
+    $('#message_bar').text(msg);
+    $('#message_bar').show();
+  }
+  return error;
+}
+
 function geocodeAndMarkAddress(title, address, pic_url) {
   var geocoder = new google.maps.Geocoder();
   geocoder.geocode({'address': address}, function(results, status) {
@@ -119,8 +154,9 @@ function geocodeAndMarkAddress(title, address, pic_url) {
         map: map,
         // animation: google.maps.Animation.DROP,
         position: results[0].geometry.location,
-        label: labels[movies_count-1 % labels.length],
       });
+
+      marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
 
       var contentString = '<img src="' + pic_url + '" />';
       var infowindow = new google.maps.InfoWindow({
