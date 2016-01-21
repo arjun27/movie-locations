@@ -80,3 +80,33 @@ ul.movie_list li {
   font-size: 1.7em;
   color: #fff;
 }
+
+input[type="text"] {
+  font-size: 14px;
+  width: 50%;
+  padding: 10px;
+  border: none;
+  border-bottom: solid 3px #c9c9c9;
+  transition: border 0.3s;
+}
+
+input[type="text"]:focus {
+  border-bottom: solid 3px #969696;
+}
+
+input[type="button"] {
+  color: #fff;
+  background-color: #6496c8;
+  border: none;
+  border-bottom: solid 4px #27496d;
+  font-size: 14px;
+  padding: 10px;
+}
+
+input[type="button"]:hover {
+  background-color: #417cb8
+}
+
+input[type="button"]:active {
+  background-color: #417cb8;
+}

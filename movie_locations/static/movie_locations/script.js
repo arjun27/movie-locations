@@ -65,6 +65,7 @@ function searchListener (title) {
       $('.movie_list').append(html)
       movies_count += 1;
       $('.movie_list').width(movies_count * 110);
+      // TODO: scrolling $('#selected_movies').scrollLeft = movies_count * 110;
       selectMovie(title);
       $('#search_text').val('');
     }
