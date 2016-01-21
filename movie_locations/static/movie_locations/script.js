@@ -47,7 +47,7 @@ function searchListener (title) {
       console.log(pic_url);
       if (!poster_path) pic_url = default_image;
     } else {
-      pic_url = 'images/default.png';
+      pic_url = default_image;
     }
 
     if (!data1[0][0]) {
