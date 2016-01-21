@@ -42,20 +42,25 @@ html, body {
   bottom: 0;
   width: 100%;
   opacity: 0.8;
-  overflow: scroll;
+  overflow-x: scroll;
+  overflow-y: hidden;
 }
 
 ul.movie_list {
   list-style-type: none;
-  width: 1000px;
+  width: 1500px;
   padding-left: 0px;
   margin: 0 auto;
+  color: #fff;
 }
 
 ul.movie_list li {
-  width: 95px;
   display: inline-table;
   padding: 10px;
   padding-right: 0px;
   opacity: 1.0;
+}
+
+.movie_poster {
+  padding-top: 10px;
 }

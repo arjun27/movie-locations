@@ -5,9 +5,12 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
-    
+
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'movie_locations/style.css' %}" />
+    <script type="text/javascript">
+      var default_image = '{% static "movie_locations/images/default.png" %}';
+    </script>
 
   </head>
 
@@ -26,15 +29,7 @@
 
     <div id="selected_movies">
       <ul class="movie_list">
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
-        <li> <img src="https://image.tmdb.org/t/p/w92/tXzOAeub5ZaxGv9vkJLtU0aNenl.jpg" /> </li>
+        &nbsp;
       </ul>
     </div>
     

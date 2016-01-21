@@ -1,5 +1,7 @@
 var map;
 var markers = new Array();
+var movies_count = 0;
+var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -7,13 +9,20 @@ function initMap() {
     center: {lat: 37.769, lng: -122.446}
   });
 
-  document.getElementById('submit').addEventListener('click', searchListener);
+  document.getElementById('submit').addEventListener('click', function() { 
+    var title = document.getElementById('search_text').value;
+    searchListener (title);
+  });
 
   populateAutocomplete();
+
+  // searchListener('Star Trek IV: The Voyage Home');
+  // searchListener('Basic Instinct');
+  // searchListener('Ant-Man');
+  searchListener('Godzilla');
 }
 
-function searchListener () {
-  var title = document.getElementById('search_text').value;
+function searchListener (title) {
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?title=' + title;
   var pic_api_url = 'https://api.themoviedb.org/3/search/movie?api_key=5b2d8059a779795a80fdb7e4088315ad&query=' + title;
   var get1 = $.get(api_url);
@@ -28,8 +37,9 @@ function searchListener () {
       var base_url = 'https://image.tmdb.org/t/p/w92'; // TODO: caching?
       pic_url = base_url + poster_path;
       console.log(pic_url);
+      if (!poster_path) pic_url = default_image;
     } else {
-      pic_url = ''; // TODO: no poster found picture
+      pic_url = 'images/default.png';
     }
 
     console.log(data1);
@@ -40,10 +50,29 @@ function searchListener () {
       setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
     }
     var elem_id = 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), '');
-    var html = '<a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a>';
+    // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
+    var html = '<li> <img src="' + pic_url + '" alt="' + title + '" onclick="bounceMarkers(\'' + title + '\');" /> </li>';
     console.log(html);
-    $('#selected_movies').append(html);
+    // $('#selected_movies').append(html);
+    $('.movie_list').append(html)
+    movies_count += 1;
+    $('.movie_list').width(movies_count * 120);
   }); // TODO: done() error handling?
+}
+
+function bounceMarkers (title) {
+  if (title in markers) {
+    var len = markers[title].length;
+    var i;
+    for (i = 0; i < len; i++) {
+      var marker = markers[title][i];
+      if (marker.getAnimation() !== null) {
+        marker.setAnimation(null);
+      } else {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+      }
+    }
+  }
 }
 
 function deleteSelectedMovie (id) {
@@ -52,6 +81,7 @@ function deleteSelectedMovie (id) {
   var title = elem.text();
   deleteMarkers (title);
   elem.remove();
+  movies_count -= 1;
 }
 
 function deleteMarkers (title) {
@@ -88,7 +118,8 @@ function geocodeAndMarkAddress(title, address, pic_url) {
       var marker = new google.maps.Marker({
         map: map,
         // animation: google.maps.Animation.DROP,
-        position: results[0].geometry.location
+        position: results[0].geometry.location,
+        label: labels[movies_count-1 % labels.length],
       });
 
       var contentString = '<img src="' + pic_url + '" />';
