@@ -66,6 +66,7 @@ function searchListener (title) {
       movies_count += 1;
       $('.movie_list').width(movies_count * 110);
       selectMovie(title);
+      $('#search_text').val('');
     }
   }); // TODO: done() error handling?
 }
