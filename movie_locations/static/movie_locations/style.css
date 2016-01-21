@@ -57,6 +57,7 @@ ul.movie_list li {
   padding: 5px;
   padding-right: 0px;
   opacity: 1.0;
+  position: relative;
 }
 
 .movie_poster {
@@ -69,4 +70,13 @@ ul.movie_list li {
 
 .blue_border {
   border: 2px solid #6991FD;
+}
+
+.delete {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  font-size: 1.7em;
+  color: #fff;
 }

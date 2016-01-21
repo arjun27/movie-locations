@@ -59,7 +59,7 @@ function searchListener (title) {
         setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
       }
       // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
-      var html = '<li> <a href="#" onclick="selectMovie (\'' + title + '\');" ><img id="' + getElemId(title) + '" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> </a></li>';
+      var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
       console.log(html);
       // $('#selected_movies').append(html);
       $('.movie_list').append(html)
@@ -85,13 +85,12 @@ function bounceMarkers (title) {
   }
 }
 
-function deleteSelectedMovie (id) {
-  console.log('deleting', id);
-  var elem = $('#' + id);
-  var title = elem.text();
-  deleteMarkers (title);
-  elem.remove();
+function deleteMovie (title) {
+  console.log('deleting', title);
+  deleteMarkers(title);
+  $('#' + getElemId(title)).remove();
   movies_count -= 1;
+  $('.movie_list').width(movies_count * 110);
 }
 
 function deleteMarkers (title) {
@@ -185,13 +184,13 @@ function selectMovie (title) {
       for (i = 0; i < markers[key].length; i++) {
         markers[key][i].setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
       }
-      $('#' + getElemId(key)).removeClass('red_border').addClass('blue_border');
+      $('#' + getElemId(key) + '_image').removeClass('red_border').addClass('blue_border');
     } else {
       var i;
       for (i = 0; i < markers[key].length; i++) {
         markers[key][i].setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
       }
-      $('#' + getElemId(key)).removeClass('blue_border').addClass('red_border');
+      $('#' + getElemId(key) + '_image').removeClass('blue_border').addClass('red_border');
     }
   }
 }
