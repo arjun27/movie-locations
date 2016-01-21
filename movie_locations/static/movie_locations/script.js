@@ -58,14 +58,14 @@ function searchListener (title) {
         var address = data1[0][i]['locations'] + ', San Francisco';
         setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
       }
-      var elem_id = 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), '');
       // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
-      var html = '<li> <img src="' + pic_url + '" alt="' + title + '" onclick="bounceMarkers(\'' + title + '\');" /> </li>';
+      var html = '<li> <a href="#" onclick="selectMovie (\'' + title + '\');" ><img id="' + getElemId(title) + '" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> </a></li>';
       console.log(html);
       // $('#selected_movies').append(html);
       $('.movie_list').append(html)
       movies_count += 1;
       $('.movie_list').width(movies_count * 120);
+      selectMovie(title);
     }
   }); // TODO: done() error handling?
 }
@@ -125,21 +125,21 @@ function messageBox (title, locations) {
   var msg = '';
   if (!locations) {
     error = true;
-    msg = 'Shot in SF, but no locations.';
+    msg = '<strong>' + title + '</strong> was shot in SF, but we don\'t have location data.';
   } else {
     if (titles.indexOf(title) >= 0) {
       if (title in markers) {
         error = true;
-        msg = 'Already selected.';
+        msg = '<strong>' + title + '</strong> has already been selected.';
       } 
     } else {
       error = true;
-      msg = 'Not shot in SF.';
+      msg = 'Sorry, <strong>' + title + '</strong> was not shot in SF.';
     }
   }
   if (error) {
     console.log(error);
-    $('#message_bar').text(msg);
+    $('#message_bar').html(msg);
     $('#message_bar').show();
   }
   return error;
@@ -176,4 +176,26 @@ function geocodeAndMarkAddress(title, address, pic_url) {
       console.log('Geocode was not successful for the following reason: ' + status);
     }
   });
+}
+
+function selectMovie (title) {
+  for (var key in markers) {
+    if (key == title) {
+      var i;
+      for (i = 0; i < markers[key].length; i++) {
+        markers[key][i].setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+      }
+      $('#' + getElemId(key)).removeClass('red_border').addClass('blue_border');
+    } else {
+      var i;
+      for (i = 0; i < markers[key].length; i++) {
+        markers[key][i].setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png');
+      }
+      $('#' + getElemId(key)).removeClass('blue_border').addClass('red_border');
+    }
+  }
+}
+
+function getElemId (title) {
+  return 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), ''); 
 }

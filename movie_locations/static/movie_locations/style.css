@@ -54,7 +54,7 @@ ul.movie_list {
 
 ul.movie_list li {
   display: inline-table;
-  padding: 10px;
+  padding: 5px;
   padding-right: 0px;
   opacity: 1.0;
 }
