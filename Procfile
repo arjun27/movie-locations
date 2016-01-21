@@ -1,0 +1,1 @@
+web: gunicorn movie_locations_project.wsgi --log-file -
