@@ -2,20 +2,60 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: 'Helvetica', 'sans-serif';
 }
 #map {
   height: 100%;
 }
 #floating-panel {
   position: absolute;
-  top: 10px;
-  left: 25%;
+  top: 0px;
   z-index: 5;
-  background-color: #fff;
-  padding: 5px;
-  border: 1px solid #999;
   text-align: center;
-  font-family: 'sans-serif';
-  line-height: 30px;
-  padding-left: 10px;
+  width: 100%;
+}
+
+#search_bar {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  width: 100%;
+  background-color: #2d3e50;
+  color: #fff;
+  opacity: 0.8;
+}
+
+#message_bar {
+  width: 100%;
+  background-color: #1f8dd6;
+  color: #fff;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  opacity: 0.8;
+}
+
+#selected_movies {
+  background-color: #000;
+  height: 150px;
+  margin-bottom: 0;
+  position: absolute;
+  z-index: 10;
+  bottom: 0;
+  width: 100%;
+  opacity: 0.8;
+  overflow: scroll;
+}
+
+ul.movie_list {
+  list-style-type: none;
+  width: 1000px;
+  padding-left: 0px;
+  margin: 0 auto;
+}
+
+ul.movie_list li {
+  width: 95px;
+  display: inline-table;
+  padding: 10px;
+  padding-right: 0px;
+  opacity: 1.0;
 }

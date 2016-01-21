@@ -25,7 +25,7 @@ function searchListener () {
     var pic_url = '';
     if (data2[0]['results'].length > 0) {
       var poster_path = data2[0]['results'][0]['poster_path'];
-      var base_url = 'http://image.tmdb.org/t/p/w92';
+      var base_url = 'https://image.tmdb.org/t/p/w92'; // TODO: caching?
       pic_url = base_url + poster_path;
       console.log(pic_url);
     } else {
@@ -61,6 +61,7 @@ function deleteMarkers (title) {
     for (i = 0; i < len; i++) {
       markers[title][i].setMap(null);
     }
+    delete markers[title];
   }
 }
 
