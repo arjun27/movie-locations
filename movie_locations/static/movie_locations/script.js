@@ -64,7 +64,7 @@ function searchListener (title) {
       // $('#selected_movies').append(html);
       $('.movie_list').append(html)
       movies_count += 1;
-      $('.movie_list').width(movies_count * 120);
+      $('.movie_list').width(movies_count * 110);
       selectMovie(title);
     }
   }); // TODO: done() error handling?
