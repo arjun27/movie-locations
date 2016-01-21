@@ -15,7 +15,7 @@ function initMap() {
 function searchListener () {
   var title = document.getElementById('search_text').value;
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?title=' + title;
-  var pic_api_url = 'http://api.themoviedb.org/3/search/movie?api_key=5b2d8059a779795a80fdb7e4088315ad&query=' + title;
+  var pic_api_url = 'https://api.themoviedb.org/3/search/movie?api_key=5b2d8059a779795a80fdb7e4088315ad&query=' + title;
   var get1 = $.get(api_url);
   var get2 = $.get(pic_api_url);
 
