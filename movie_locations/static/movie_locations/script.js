@@ -2,6 +2,8 @@ var map;
 var markers = new Array();
 var movies_count = 0;
 var titles = [];
+var bounds;
+var infowindows = [];
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -25,11 +27,10 @@ function initMap() {
   });
 
   populateAutocomplete();
-
+  bounds = new google.maps.LatLngBounds();
   // searchListener('Star Trek IV: The Voyage Home');
   // searchListener('Basic Instinct');
   // searchListener('Ant-Man');
-  searchListener('Godzilla');
 }
 
 function searchListener (title) {
@@ -48,24 +49,37 @@ function searchListener (title) {
       var poster_path = data2[0]['results'][0]['poster_path'];
       var base_url = 'https://image.tmdb.org/t/p/w92'; // TODO: caching?
       pic_url = base_url + poster_path;
-      console.log(pic_url);
       if (!poster_path) pic_url = default_image;
     } else {
       pic_url = default_image;
     }
 
     if (!data1[0][0]) {
+      // Title exists, but locations not found
       messageBox(title, true);
     } else if (!messageBox (title, data1[0][0]['locations'])) {
+      
       var i;
       for (i = 0; i < data1[0].length; i++) {
         var address = data1[0][i]['locations'] + ', San Francisco';
-        setTimeout(geocodeAndMarkAddress(title, address, pic_url), 10000*i); //TODO: animate
+        geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
       }
-      // var html = '<li> <a id="' + elem_id + '" href="#" onclick="deleteSelectedMovie(\'' + elem_id + '\');">' + title + '</a> </li>';
+
+      // var i = 0;
+      // function myLoop () {
+      //   setTimeout(function () {
+      //     var address = data1[0][i]['locations'] + ', San Francisco';
+      //     geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
+      //     i++;
+      //     if (i < data1[0].length) {
+      //       myLoop();
+      //     }
+      //   }, 300)
+      // }
+      // myLoop();
+
+
       var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
-      console.log(html);
-      // $('#selected_movies').append(html);
       $('.movie_list').append(html)
       movies_count += 1;
       $('.movie_list').width(movies_count * 110);
@@ -82,21 +96,28 @@ function bounceMarkers (title) {
     var i;
     for (i = 0; i < len; i++) {
       var marker = markers[title][i];
-      if (marker.getAnimation() !== null) {
-        marker.setAnimation(null);
-      } else {
-        marker.setAnimation(google.maps.Animation.BOUNCE);
-      }
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+      // if (marker.getAnimation() !== null) {
+      //   marker.setAnimation(null);
+      // } else {
+      //   marker.setAnimation(google.maps.Animation.BOUNCE);
+      // }
     }
+    setTimeout(function() {
+      for (i = 0; i < len; i++) {
+        var marker = markers[title][i];
+        marker.setAnimation(null); // this stops the bouncing
+      }
+    }, 700);
   }
 }
 
 function deleteMovie (title) {
-  console.log('deleting', title);
   deleteMarkers(title);
   $('#' + getElemId(title)).remove();
   movies_count -= 1;
   $('.movie_list').width(movies_count * 110);
+
 }
 
 function deleteMarkers (title) {
@@ -108,12 +129,24 @@ function deleteMarkers (title) {
     }
     delete markers[title];
   }
+  var new_bounds = new google.maps.LatLngBounds();
+  for (var key in markers) {
+    var i;
+    for (i = 0; i < markers[key].length; i++) {
+      new_bounds.extend(markers[key][i].position);
+    }
+  }
+  bounds = new_bounds;
+  if (bounds.isEmpty()) {
+    map.setZoom (12);
+    map.setCenter ({lat: 37.769, lng: -122.446});
+  }
+  else map.fitBounds(bounds);
 }
 
 function populateAutocomplete () {
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?$select=title&$group=title';
   $.get(api_url, function(data, status) {
-    console.log(status);
     var i;
     for (i = 0; i < data.length; i++) {
       titles.push(data[i]['title']);
@@ -121,11 +154,12 @@ function populateAutocomplete () {
     $("#search_text").autocomplete( {
       source: titles
     });
+    
+    searchListener('Godzilla'); //TODO: remove
   });
 }
 
 function messageBox (title, locations) {
-  console.log('messageBox title', title);
   var error = false;
   var msg = '';
   if (title == '') {
@@ -139,6 +173,7 @@ function messageBox (title, locations) {
       if (title in markers) {
         error = true;
         msg = '<strong>' + title + '</strong> has already been selected.';
+        selectMovie(title);
       } 
     } else {
       error = true;
@@ -146,7 +181,6 @@ function messageBox (title, locations) {
     }
   }
   if (error) {
-    console.log(error);
     $('#message_bar').html(msg);
     $('#message_bar').show();
   }
@@ -157,20 +191,28 @@ function geocodeAndMarkAddress(title, address, pic_url) {
   var geocoder = new google.maps.Geocoder();
   geocoder.geocode({'address': address}, function(results, status) {
     if (status === google.maps.GeocoderStatus.OK) {
-      map.setCenter(results[0].geometry.location);
+      // map.setCenter(results[0].geometry.location);
+      map.panTo(results[0].geometry.location);
       var marker = new google.maps.Marker({
         map: map,
-        // animation: google.maps.Animation.DROP,
+        // animation: google.maps.Animation.BOUNCE,
         position: results[0].geometry.location,
       });
 
+      setTimeout(function() {
+        marker.setAnimation(null); // this stops the bouncing
+      }, 700);
+
       marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
 
-      var contentString = '<img src="' + pic_url + '" />';
+      var contentString = '<strong>' + address + '</strong><br/>' + title;
       var infowindow = new google.maps.InfoWindow({
-        content: contentString
+        content: contentString,
+        maxWidth: 250
       });
+      infowindows.push(infowindow);
       marker.addListener('click', function() {
+        closeInfoWindows();
         infowindow.open(map, marker);
       });
 
@@ -178,10 +220,12 @@ function geocodeAndMarkAddress(title, address, pic_url) {
         markers[title].push(marker);
       } else {
         markers[title] = [marker];
-        console.log('new', markers);
       }
+
+      addToBounds(marker);
+      map.fitBounds(bounds);
     } else {
-      console.log('Geocode was not successful for the following reason: ' + status);
+      console.log('Geocode was not successful because: ' + status);
     }
   });
 }
@@ -202,8 +246,30 @@ function selectMovie (title) {
       $('#' + getElemId(key) + '_image').removeClass('blue_border').addClass('red_border');
     }
   }
+  bounceMarkers(title);
 }
 
 function getElemId (title) {
   return 'selected_' + title.replace(/[^\w]/gi, '');
+}
+
+function getBoundsObject (locations) {
+  var bounds = new google.maps.LatLngBounds();
+  var i;
+  for (i = 0; i < locations.length; i++) {
+    bounds.extend(locations[i].position);
+  }
+  return bounds;
+}
+
+function addToBounds (marker) {
+  bounds.extend(marker.position);
+  return bounds;
+}
+
+function closeInfoWindows () {
+  var i; 
+  for (i = 0; i < infowindows.length; i++) {
+    infowindows[i].close();
+  }
 }
