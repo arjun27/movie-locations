@@ -141,7 +141,9 @@ function deleteMarkers (title) {
     map.setZoom (12);
     map.setCenter ({lat: 37.769, lng: -122.446});
   }
-  else map.fitBounds(bounds);
+  else { 
+    customFitBounds();
+  }
 }
 
 function populateAutocomplete () {
@@ -155,6 +157,17 @@ function populateAutocomplete () {
       source: titles,
       open: function(event, ui) {
         $('.ui-autocomplete').off('menufocus hover mouseover mouseenter');
+      },
+      autoFocus: true
+    });
+    $("#search_text").keydown(function(event) {
+      if(event.keyCode == 13) {
+        if($("#search_text").val().length==0) {
+          event.preventDefault();
+          return false;
+        } else {
+          searchListener($("#search_text").val());
+        }
       }
     });
     searchListener('Godzilla'); //TODO: remove
@@ -225,7 +238,7 @@ function geocodeAndMarkAddress(title, address, pic_url) {
       }
 
       addToBounds(marker);
-      map.fitBounds(bounds);
+      customFitBounds();
     } else {
       console.log('Geocode was not successful because: ' + status);
     }
@@ -274,4 +287,10 @@ function closeInfoWindows () {
   for (i = 0; i < infowindows.length; i++) {
     infowindows[i].close();
   }
+}
+
+function customFitBounds () {
+  map.fitBounds(bounds);
+  var zoom = map.getZoom();
+  map.setZoom(zoom > 13 ? 13 : zoom);
 }
