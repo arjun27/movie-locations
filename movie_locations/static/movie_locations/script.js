@@ -32,9 +32,6 @@ function initMap() {
   populateAutocomplete();
   bounds = new google.maps.LatLngBounds();
   imgWidth = $(window).width() < 500 ? 80 : 115;
-  // searchListener('Star Trek IV: The Voyage Home');
-  // searchListener('Basic Instinct');
-  // searchListener('Ant-Man');
 }
 
 function searchListener (title) {
@@ -107,7 +104,6 @@ function searchListener (title) {
       $('.movie_list').append(html)
       movies_count += 1;
       $('.movie_list').width(movies_count * imgWidth);
-      // TODO: scrolling $('#selected_movies').scrollLeft = movies_count * 110;
 
       // reset search field
       $('#search_text').val('');

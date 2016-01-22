@@ -1,20 +1,28 @@
-# movie-locations
+# SF Movie Locations
 
 ## Problem statement
-Create a service that shows on a map where movies have been filmed in San Francisco. The user should be able to filter the view using autocompletion search.
+Show movie locations on a map of San Francisco. The user should be able to filter the view using autocomplete search. 
 
-The data is available on DataSF: Film Locations.
+Data has been sourced from [SF OpenData](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am)
 
 ## Solution
-Hosted application link
+#### Final link
+The solution has been deployed on [heroku](https://movie-locations.herokuapp.com/).
 
-## Technical choices
+#### Design choices
+asijdfi
+
+#### Technical choices
 Trade offs: since tmdb and google maps limits are on IP address, computation is on client side
 
 ## Other code
+* Named data networking: I worked with on future Internet architecture at the Internet Research Lab, UCLA, to add bluetooth physical layer compatibility to the stack. Code for [unix](https://github.com/arjun27/NDNBlue-BlueZ) (mostly C) and [android](https://github.com/arjun27/NDNBlue-BlueZ) (Android SDK)
+* Leetcode solutions: 100+ Leetcode.com problems solved [link](https://github.com/arjun27/LeetCode) (C++ STL)
 
 ## Public profiles
-Twitter
-Linkedin
+Linkedin [link](https://in.linkedin.com/in/arjun-attam-ba73a826)
+
+Twitter [link](https://twitter.com/arjunattam)
 
 ## Hosted application link
+[movie-locations.herokuapp.com](https://movie-locations.herokuapp.com/)
