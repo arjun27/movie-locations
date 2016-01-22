@@ -97,10 +97,10 @@ input[type="text"]:focus {
 input[type="button"] {
   color: #fff;
   background-color: #6496c8;
-  border: none;
   border-bottom: solid 4px #27496d;
   font-size: 14px;
   padding: 10px;
+  -webkit-appearance: none;
 }
 
 input[type="button"]:hover {
