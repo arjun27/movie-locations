@@ -152,9 +152,11 @@ function populateAutocomplete () {
       titles.push(data[i]['title']);
     }
     $("#search_text").autocomplete( {
-      source: titles
+      source: titles,
+      open: function(event, ui) {
+        $('.ui-autocomplete').off('menufocus hover mouseover mouseenter');
+      }
     });
-    
     searchListener('Godzilla'); //TODO: remove
   });
 }
