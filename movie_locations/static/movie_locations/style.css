@@ -113,17 +113,17 @@ input[type="button"]:active {
 }
 
 .ui-autocomplete, .ui-menu {
-    background: #fff;
-    font-size:14px;
-    font-family: 'Helvetica', 'sans-serif';
-    width: 50%;
-    max-height: 400px; 
-    overflow-y: auto; 
-    overflow-x: hidden;
+  background: #fff;
+  font-size:14px;
+  font-family: 'Helvetica', 'sans-serif';
+  width: 50%;
+  max-height: 400px; 
+  overflow-y: auto; 
+  overflow-x: hidden;
 }
 
 .ui-menu-item {
-  padding: 10px;
+  height: 25px;
 }
 
 @media screen and (max-width: 500px) {

@@ -201,9 +201,7 @@ function createMarker (address, title, location) {
     content: contentString,
     maxWidth: 250
   });
-  console.log('content', contentString);
   infowindows.push(infowindow);
-  console.log('marker', marker.position.toString());
   marker.addListener('click', function() {
     closeInfoWindows();
     infowindow.open(map, marker);
