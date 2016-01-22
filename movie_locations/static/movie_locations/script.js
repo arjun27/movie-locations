@@ -67,29 +67,100 @@ function searchListener (title) {
       //   geocodeAndMarkAddress(title, address, pic_url);
       // }
 
-      var i = 0;
-      function myLoop () {
-        setTimeout(function () {
-          var address = data1[0][i]['locations'] + ', San Francisco';
-          geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
-          i++;
-          if (i < data1[0].length) {
-            myLoop();
-          }
-        }, 100)
+      // var i = 0;
+      // function myLoop () {
+      //   setTimeout(function () {
+      //     var address = data1[0][i]['locations'] + ', San Francisco';
+      //     geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
+      //     i++;
+      //     if (i < data1[0].length) {
+      //       myLoop();
+      //     }
+      //   }, 200)
+      // }
+      // myLoop();
+
+      // get geocodes
+      var geocoder = new google.maps.Geocoder();
+      var i; var addresses = [];
+      for (i = 0; i < data1[0].length; i++) {
+        addresses.push ( data1[0][i]['locations'] + ', San Francisco' );
       }
-      myLoop();
+      var deferreds = getGeocodeAddressDeferred(geocoder, addresses);
+      var markersData = [];
+      $.when.apply($, deferreds).done(function (locations) {
+        $.each(arguments, function (i, data) {
+          if (data) markersData.push(data);
+        });
+        // put markers
+        var i;
+        for (i = 0; i < markersData.length; i++) {
+          createMarker(markersData[i]['address'], title, markersData[i]['location']);
+        }
+        selectMovie(title);
+      });
 
-
+      // put movie image in movie list
       var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title.replace('\'', '\\\'') + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title.replace('\'', '\\\'') + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
       $('.movie_list').append(html)
       movies_count += 1;
       $('.movie_list').width(movies_count * imgWidth);
       // TODO: scrolling $('#selected_movies').scrollLeft = movies_count * 110;
-      selectMovie(title);
+
+      // reset search field
       $('#search_text').val('');
     }
   });
+}
+function createMarker (address, title, location) {
+  var marker = new google.maps.Marker({
+    map: map,
+    animation: google.maps.Animation.DROP,
+    position: location
+  });
+  marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+  var contentString = '<strong>' + address + '</strong><br/>' + title;
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString,
+    maxWidth: 250
+  });
+  console.log('content', contentString);
+  infowindows.push(infowindow);
+  console.log('marker', marker.position.toString());
+  marker.addListener('click', function() {
+    closeInfoWindows();
+    infowindow.open(map, marker);
+  });
+
+  if (title in markers) {
+    markers[title].push(marker);
+  } else {
+    markers[title] = [marker];
+  }
+
+  addToBounds(marker);
+  customFitBounds();
+}
+
+function getGeocodeAddressDeferred(geocoder, addresses) {
+  var deferreds = [];
+  $.each(addresses, function (i,address) {
+    deferreds.push(geocodeAddress(geocoder, address));
+  });
+  return deferreds;
+}
+function geocodeAddress(geocoder, address) {
+  var deferred = $.Deferred();
+  geocoder.geocode({ 'address': address }, function (results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+      var data = { 'address': address, 'location': results[0].geometry.location};
+      deferred.resolve(data);
+    } else {
+      console.log('Geocode was not successful because: ' + status);
+      deferred.resolve(null);
+    } 
+  });
+  return deferred.promise();
 }
 
 function bounceMarkers (title) {
@@ -114,7 +185,6 @@ function deleteMovie (title) {
   $('#' + getElemId(title)).remove();
   movies_count -= 1;
   $('.movie_list').width(movies_count * imgWidth);
-
 }
 
 function deleteMarkers (title) {
@@ -169,6 +239,7 @@ function populateAutocomplete () {
     });
 
     // state zero carousel
+    // searchListener('Basic Instinct');
     searchListener('Star Trek II : The Wrath of Khan');
     searchListener('The Times of Harvey Milk');
     searchListener('Star Trek VI: The Undiscovered Country');
@@ -206,49 +277,6 @@ function messageBox (title, locations) {
     $('#message_bar').hide();
   }
   return error;
-}
-
-function geocodeAndMarkAddress(title, address, pic_url) {
-  var geocoder = new google.maps.Geocoder();
-  geocoder.geocode({'address': address}, function(results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      // map.setCenter(results[0].geometry.location);
-      map.panTo(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-        map: map,
-        animation: google.maps.Animation.DROP,
-        position: results[0].geometry.location,
-      });
-
-      setTimeout(function() {
-        marker.setAnimation(null); // this stops the bouncing
-      }, 700);
-
-      marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
-
-      var contentString = '<strong>' + address + '</strong><br/>' + title;
-      var infowindow = new google.maps.InfoWindow({
-        content: contentString,
-        maxWidth: 250
-      });
-      infowindows.push(infowindow);
-      marker.addListener('click', function() {
-        closeInfoWindows();
-        infowindow.open(map, marker);
-      });
-
-      if (title in markers) {
-        markers[title].push(marker);
-      } else {
-        markers[title] = [marker];
-      }
-
-      addToBounds(marker);
-      customFitBounds();
-    } else {
-      console.log('Geocode was not successful because: ' + status);
-    }
-  });
 }
 
 function selectMovie (title) {
