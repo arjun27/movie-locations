@@ -1,3 +1,6 @@
+/*
+  Global variable definitions
+*/
 var map;
 var markers = new Array();
 var movies_count = 0;
@@ -7,7 +10,11 @@ var infowindows = [];
 var imgWidth, defaultZoom;
 var sfCenter = {lat: 37.769, lng: -122.446};
 
+/*
+  Map methods
+*/
 function initMap() {
+  // method to initialise the map and define constants
   defaultZoom = $(window).width() < 500 ? 11 : 12;
   map = new google.maps.Map(document.getElementById('map'), {
     zoom: defaultZoom,
@@ -34,7 +41,11 @@ function initMap() {
   imgWidth = $(window).width() < 500 ? 80 : 115;
 }
 
+/*
+  Search methods
+*/
 function searchListener (title) {
+  // main search method
   if (title == '') {
     messageBox(title, null);
     return;
@@ -56,16 +67,11 @@ function searchListener (title) {
     }
 
     if (!data1[0][0]) {
-      // Title exists, but locations not found
+      // title exists, but locations not found
       messageBox(title, true);
     } else if (!messageBox (title, data1[0][0]['locations'])) {
       
-      // var i;
-      // for (i = 0; i < data1[0].length; i++) {
-      //   var address = data1[0][i]['locations'] + ', San Francisco';
-      //   geocodeAndMarkAddress(title, address, pic_url);
-      // }
-
+      // code to bypass geocode limit by delaying calls
       // var i = 0;
       // function myLoop () {
       //   setTimeout(function () {
@@ -110,108 +116,40 @@ function searchListener (title) {
     }
   });
 }
-function createMarker (address, title, location) {
-  var marker = new google.maps.Marker({
-    map: map,
-    animation: google.maps.Animation.DROP,
-    position: location
-  });
-  marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
-  var contentString = '<strong>' + address + '</strong><br/>' + title;
-  var infowindow = new google.maps.InfoWindow({
-    content: contentString,
-    maxWidth: 250
-  });
-  console.log('content', contentString);
-  infowindows.push(infowindow);
-  console.log('marker', marker.position.toString());
-  marker.addListener('click', function() {
-    closeInfoWindows();
-    infowindow.open(map, marker);
-  });
 
-  if (title in markers) {
-    markers[title].push(marker);
+function messageBox (title, locations) {
+  // method to handle errors in search text input
+  var error = false;
+  var msg = '';
+  if (title == '') {
+    error = true;
+    msg = 'Please enter a movie title';
+  } else if (!locations) {
+    error = true;
+    msg = '<strong>' + title + '</strong> was shot in SF, but we don\'t have location data.';
   } else {
-    markers[title] = [marker];
-  }
-
-  addToBounds(marker);
-  customFitBounds();
-}
-
-function getGeocodeAddressDeferred(geocoder, addresses) {
-  var deferreds = [];
-  $.each(addresses, function (i,address) {
-    deferreds.push(geocodeAddress(geocoder, address));
-  });
-  return deferreds;
-}
-function geocodeAddress(geocoder, address) {
-  var deferred = $.Deferred();
-  geocoder.geocode({ 'address': address }, function (results, status) {
-    if (status === google.maps.GeocoderStatus.OK) {
-      var data = { 'address': address, 'location': results[0].geometry.location};
-      deferred.resolve(data);
+    if (titles.indexOf(title) >= 0) {
+      if (title in markers) {
+        error = true;
+        msg = '<strong>' + title + '</strong> has already been selected.';
+        selectMovie(title);
+      } 
     } else {
-      console.log('Geocode was not successful because: ' + status);
-      deferred.resolve(null);
-    } 
-  });
-  return deferred.promise();
-}
-
-function bounceMarkers (title) {
-  if (title in markers) {
-    var len = markers[title].length;
-    var i;
-    for (i = 0; i < len; i++) {
-      var marker = markers[title][i];
-      marker.setAnimation(google.maps.Animation.BOUNCE);
-    }
-    setTimeout(function() {
-      for (i = 0; i < len; i++) {
-        var marker = markers[title][i];
-        marker.setAnimation(null);
-      }
-    }, 700);
-  }
-}
-
-function deleteMovie (title) {
-  deleteMarkers(title);
-  $('#' + getElemId(title)).remove();
-  movies_count -= 1;
-  $('.movie_list').width(movies_count * imgWidth);
-}
-
-function deleteMarkers (title) {
-  if (title in markers) {
-    var len = markers[title].length;
-    var i;
-    for (i = 0; i < len; i++) {
-      markers[title][i].setMap(null);
-    }
-    delete markers[title];
-  }
-  var new_bounds = new google.maps.LatLngBounds();
-  for (var key in markers) {
-    var i;
-    for (i = 0; i < markers[key].length; i++) {
-      new_bounds.extend(markers[key][i].position);
+      error = true;
+      msg = 'Sorry, <strong>' + title + '</strong> was not shot in SF.';
     }
   }
-  bounds = new_bounds;
-  if (bounds.isEmpty()) {
-    map.setZoom (defaultZoom);
-    map.setCenter (sfCenter);
+  if (error) {
+    $('#message_bar').html(msg);
+    $('#message_bar').show();
+  } else {
+    $('#message_bar').hide();
   }
-  else { 
-    customFitBounds();
-  }
+  return error;
 }
 
 function populateAutocomplete () {
+  // method to populate autocomplete search
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?$select=title&$group=title';
   $.get(api_url, function(data, status) {
     var i;
@@ -247,37 +185,124 @@ function populateAutocomplete () {
   });
 }
 
-function messageBox (title, locations) {
-  var error = false;
-  var msg = '';
-  if (title == '') {
-    error = true;
-    msg = 'Please enter a movie title';
-  } else if (!locations) {
-    error = true;
-    msg = '<strong>' + title + '</strong> was shot in SF, but we don\'t have location data.';
+/*
+  Marker methods
+*/
+function createMarker (address, title, location) {
+  // method to create marker and infowindow
+  var marker = new google.maps.Marker({
+    map: map,
+    animation: google.maps.Animation.DROP,
+    position: location
+  });
+  marker.setIcon('http://maps.google.com/mapfiles/ms/icons/blue-dot.png');
+  var contentString = '<strong>' + address + '</strong><br/>' + title;
+  var infowindow = new google.maps.InfoWindow({
+    content: contentString,
+    maxWidth: 250
+  });
+  console.log('content', contentString);
+  infowindows.push(infowindow);
+  console.log('marker', marker.position.toString());
+  marker.addListener('click', function() {
+    closeInfoWindows();
+    infowindow.open(map, marker);
+  });
+
+  if (title in markers) {
+    markers[title].push(marker);
   } else {
-    if (titles.indexOf(title) >= 0) {
-      if (title in markers) {
-        error = true;
-        msg = '<strong>' + title + '</strong> has already been selected.';
-        selectMovie(title);
-      } 
-    } else {
-      error = true;
-      msg = 'Sorry, <strong>' + title + '</strong> was not shot in SF.';
+    markers[title] = [marker];
+  }
+  addToBounds(marker);
+  customFitBounds();
+}
+
+function bounceMarkers (title) {
+  // method to animate markers for selected movie
+  if (title in markers) {
+    var len = markers[title].length;
+    var i;
+    for (i = 0; i < len; i++) {
+      var marker = markers[title][i];
+      marker.setAnimation(google.maps.Animation.BOUNCE);
+    }
+    setTimeout(function() {
+      for (i = 0; i < len; i++) {
+        var marker = markers[title][i];
+        marker.setAnimation(null);
+      }
+    }, 700);
+  }
+}
+
+function deleteMarkers (title) {
+  // method to delete markers of movie to be deleted
+  if (title in markers) {
+    var len = markers[title].length;
+    var i;
+    for (i = 0; i < len; i++) {
+      markers[title][i].setMap(null);
+    }
+    delete markers[title];
+  }
+  var new_bounds = new google.maps.LatLngBounds();
+  for (var key in markers) {
+    var i;
+    for (i = 0; i < markers[key].length; i++) {
+      new_bounds.extend(markers[key][i].position);
     }
   }
-  if (error) {
-    $('#message_bar').html(msg);
-    $('#message_bar').show();
-  } else {
-    $('#message_bar').hide();
+  bounds = new_bounds;
+  if (bounds.isEmpty()) {
+    map.setZoom (defaultZoom);
+    map.setCenter (sfCenter);
   }
-  return error;
+  else { 
+    customFitBounds();
+  }
+}
+
+/*
+  Geocoding methods
+*/
+function getGeocodeAddressDeferred(geocoder, addresses) {
+  // method to handle multiple async calls to google maps
+  var deferreds = [];
+  $.each(addresses, function (i,address) {
+    deferreds.push(geocodeAddress(geocoder, address));
+  });
+  return deferreds;
+}
+
+function geocodeAddress(geocoder, address) {
+  // method to fetch geocode for location from google maps
+  var deferred = $.Deferred();
+  geocoder.geocode({ 'address': address }, function (results, status) {
+    if (status === google.maps.GeocoderStatus.OK) {
+      var data = { 'address': address, 'location': results[0].geometry.location};
+      deferred.resolve(data);
+    } else {
+      console.log('Geocode was not successful because: ' + status);
+      deferred.resolve(null);
+    } 
+  });
+  return deferred.promise();
+}
+
+/*
+  Movie operation methods
+*/
+function deleteMovie (title) {
+  // method to delete movie from selection
+  deleteMarkers(title);
+  $('#' + getElemId(title)).remove();
+  movies_count -= 1;
+  $('.movie_list').width(movies_count * imgWidth);
 }
 
 function selectMovie (title) {
+  // method to select movie and its markers
   for (var key in markers) {
     if (key == title) {
       var i;
@@ -296,33 +321,37 @@ function selectMovie (title) {
   bounceMarkers(title);
 }
 
-function getElemId (title) {
-  return 'selected_' + title.replace(/[^\w]/gi, '');
-}
-
-function getBoundsObject (locations) {
-  var bounds = new google.maps.LatLngBounds();
-  var i;
-  for (i = 0; i < locations.length; i++) {
-    bounds.extend(locations[i].position);
-  }
-  return bounds;
-}
-
+/*
+  Map bounds methods
+*/
 function addToBounds (marker) {
+  // method to add locations map display bounds
   bounds.extend(marker.position);
   return bounds;
 }
 
+function customFitBounds () {
+  // method to move map to new bounds
+  map.fitBounds(bounds);
+  var zoom = map.getZoom();
+  map.setZoom(zoom > 13 ? 13 : zoom);
+}
+
+/*
+  Infowindow methods
+*/
 function closeInfoWindows () {
+  // method to close all infowindows
   var i; 
   for (i = 0; i < infowindows.length; i++) {
     infowindows[i].close();
   }
 }
 
-function customFitBounds () {
-  map.fitBounds(bounds);
-  var zoom = map.getZoom();
-  map.setZoom(zoom > 13 ? 13 : zoom);
+/*
+  Utility methods
+*/
+function getElemId (title) {
+  // method to get element id for a selected movie
+  return 'selected_' + title.replace(/[^\w]/gi, '');
 }
