@@ -9,20 +9,24 @@ Data has been sourced from [SF OpenData](https://data.sfgov.org/Culture-and-Recr
 #### Final link
 The solution has been deployed on [heroku](https://movie-locations.herokuapp.com/).
 
-#### Design choices
-asijdfi
+#### Functional choices
+
 
 #### Technical choices
-Trade offs: since tmdb and google maps limits are on IP address, computation is on client side
+* Trade offs: since tmdb and google maps limits are on IP address, computation is on client side
+* Front end
+  Libraries used: jquery, 
+* Back end
+  Framework: django
+  Testing: basic automated tests to check response status added
 
 ## Other code
 * Named data networking: I worked with on future Internet architecture at the Internet Research Lab, UCLA, to add bluetooth physical layer compatibility to the stack. Code for [unix](https://github.com/arjun27/NDNBlue-BlueZ) (mostly C) and [android](https://github.com/arjun27/NDNBlue-BlueZ) (Android SDK)
 * Leetcode solutions: 100+ Leetcode.com problems solved [link](https://github.com/arjun27/LeetCode) (C++ STL)
 
 ## Public profiles
-Linkedin [link](https://in.linkedin.com/in/arjun-attam-ba73a826)
-
-Twitter [link](https://twitter.com/arjunattam)
+* Linkedin [link](https://in.linkedin.com/in/arjun-attam-ba73a826)
+* Twitter [link](https://twitter.com/arjunattam)
 
 ## Hosted application link
 [movie-locations.herokuapp.com](https://movie-locations.herokuapp.com/)
