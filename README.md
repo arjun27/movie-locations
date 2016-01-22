@@ -3,11 +3,13 @@
 ## Problem statement
 Show movie locations on a map of San Francisco. The user should be able to filter the view using autocomplete search. 
 
-Data has been sourced from [SF OpenData](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am)
+Movie locations data for SF is available at [OpenData](https://data.sfgov.org/Culture-and-Recreation/Film-Locations-in-San-Francisco/yitu-d5am)
 
 ## Solution
-#### Deployment location
+#### Solution summary
 The solution has been deployed on [heroku](https://movie-locations.herokuapp.com/). The app maps movie locations, and search for movie titles is assisted with an autocomplete feature.
+
+The code calls the SF OpenData API for movie locations and The Movie Database API for movie poster. Movie locations are plotted on a map, made with the Google Maps API. The UX/UI is built to help manage multiple movies and their locations, on desktop and mobile screen sizes and browsers.
 
 #### Functional choices
 * The dataset has 1241 locations for 273 movies. To display all the information would be meaningless to the user. Therefore, the app has been designed so that it is easy for a user to observe movie locations of selected movies.
@@ -23,20 +25,23 @@ The solution has been deployed on [heroku](https://movie-locations.herokuapp.com
   The free usage tier of Google Maps API restrict calls to 10 entries per second. While it is possible to overcome this by introducing delays in API calls, it has been disabled as it affected the UX. Caching could not be implemented do to time constraints. 
 * __Back end__
 
-  The app uses Django as the web framework, with Gunicorn as the production server. Whitenoise is used to serve static files. The app is hosted on a free web dyno on Heroku. Django was chosen because it fulfills the requirements, is easy to maintain and deploy on Heroku.
+  The app uses Django as the web framework, with Gunicorn as the production server. Whitenoise is used to serve static files. The app is hosted on a free web dyno on Heroku. Django was chosen because it fulfills the app requirements, is easy to maintain and deploy on Heroku.
 
   The app is front-end heavy, and most of the Python code is Django boilerplate. Some work was done in Python to define URLs, serve static files, and automated testing.
 
   Automated testing: a basic test case to check response of root URL has been added.
 * __Front end__
 
-  I wrote the front-end HTML, CSS and JS. API calls where made to SF OpenData (for movie locations data), Google Maps (map operations) and The Movie Database (movie poster data) whenever required. Jquery was used for two reasons: autocomplete and handling asynchronous calls.
+  I wrote the front-end HTML, CSS and JS. API calls where made to SF OpenData (for movie locations data), Google Maps (map operations) and The Movie Database (movie poster data) whenever required. Jquery was used for two reasons: autocomplete and handling asynchronous methods.
 
   Autocomplete: The app search uses the Jquery [widget](https://jqueryui.com/autocomplete/) to implement autocomplete. The elements of the widget were styled in CSS to suit the app UI.
 
-  Asynchronous calls: The app has multiple instances where parallel asynchronous method are launched, that require common callback functions to give a smooth UX. These instances occur when movie titles are searched and when multiple movie locations are geocoded. The Jquery Deferred utility object was used to run the appropriate callbacks. (_I enjoyed learning how to build this the most._)
+  Asynchronous methods: The app has multiple instances where parallel asynchronous method are launched, that require common callback functions to give a smooth UX. These instances occur when movie titles are searched and when multiple movie locations are geocoded. The Jquery Deferred utility object was used to run the appropriate callbacks. (_I enjoyed learning how to build this the most._)
 
   The app also uses Font Awesome [icons](http://fortawesome.github.io/Font-Awesome/) for the delete symbol in the movie posters carousel.
+
+#### Hosted application link
+[movie-locations.herokuapp.com](https://movie-locations.herokuapp.com/)
 
 #### Future possible work
 * Geolocalize the user to assist location
@@ -51,6 +56,3 @@ The solution has been deployed on [heroku](https://movie-locations.herokuapp.com
 ## Public profiles
 * Linkedin [link](https://in.linkedin.com/in/arjun-attam-ba73a826)
 * Twitter [link](https://twitter.com/arjunattam)
-
-## Hosted application link
-[movie-locations.herokuapp.com](https://movie-locations.herokuapp.com/)
