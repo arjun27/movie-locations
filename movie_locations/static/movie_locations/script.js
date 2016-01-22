@@ -4,6 +4,7 @@ var movies_count = 0;
 var titles = [];
 var bounds;
 var infowindows = [];
+var imgWidth;
 
 function initMap() {
   map = new google.maps.Map(document.getElementById('map'), {
@@ -28,6 +29,7 @@ function initMap() {
 
   populateAutocomplete();
   bounds = new google.maps.LatLngBounds();
+  imgWidth = $(window).width() < 500 ? 80 : 115;
   // searchListener('Star Trek IV: The Voyage Home');
   // searchListener('Basic Instinct');
   // searchListener('Ant-Man');
@@ -47,7 +49,7 @@ function searchListener (title) {
     var pic_url = '';
     if (data2[0]['results'].length > 0) {
       var poster_path = data2[0]['results'][0]['poster_path'];
-      var base_url = 'https://image.tmdb.org/t/p/w92'; // TODO: caching?
+      var base_url = 'https://image.tmdb.org/t/p/w92';
       pic_url = base_url + poster_path;
       if (!poster_path) pic_url = default_image;
     } else {
@@ -59,35 +61,35 @@ function searchListener (title) {
       messageBox(title, true);
     } else if (!messageBox (title, data1[0][0]['locations'])) {
       
-      var i;
-      for (i = 0; i < data1[0].length; i++) {
-        var address = data1[0][i]['locations'] + ', San Francisco';
-        geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
-      }
-
-      // var i = 0;
-      // function myLoop () {
-      //   setTimeout(function () {
-      //     var address = data1[0][i]['locations'] + ', San Francisco';
-      //     geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
-      //     i++;
-      //     if (i < data1[0].length) {
-      //       myLoop();
-      //     }
-      //   }, 300)
+      // var i;
+      // for (i = 0; i < data1[0].length; i++) {
+      //   var address = data1[0][i]['locations'] + ', San Francisco';
+      //   geocodeAndMarkAddress(title, address, pic_url);
       // }
-      // myLoop();
+
+      var i = 0;
+      function myLoop () {
+        setTimeout(function () {
+          var address = data1[0][i]['locations'] + ', San Francisco';
+          geocodeAndMarkAddress(title, address, pic_url); //TODO: animate
+          i++;
+          if (i < data1[0].length) {
+            myLoop();
+          }
+        }, 100)
+      }
+      myLoop();
 
 
       var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title.replace('\'', '\\\'') + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title.replace('\'', '\\\'') + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
       $('.movie_list').append(html)
       movies_count += 1;
-      $('.movie_list').width(movies_count * 115);
+      $('.movie_list').width(movies_count * imgWidth);
       // TODO: scrolling $('#selected_movies').scrollLeft = movies_count * 110;
       selectMovie(title);
       $('#search_text').val('');
     }
-  }); // TODO: done() error handling?
+  });
 }
 
 function bounceMarkers (title) {
@@ -111,7 +113,7 @@ function deleteMovie (title) {
   deleteMarkers(title);
   $('#' + getElemId(title)).remove();
   movies_count -= 1;
-  $('.movie_list').width(movies_count * 115);
+  $('.movie_list').width(movies_count * imgWidth);
 
 }
 
@@ -165,8 +167,14 @@ function populateAutocomplete () {
         }
       }
     });
-    searchListener('Godzilla'); //TODO: remove
-    searchListener('Star Trek IV: The Voyage Home');
+
+    // state zero carousel
+    searchListener('Star Trek II : The Wrath of Khan');
+    searchListener('The Times of Harvey Milk');
+    searchListener('Star Trek VI: The Undiscovered Country');
+    searchListener('Alexander\'s Ragtime Band');
+    searchListener('Crackers');
+    searchListener('High Anxiety');
   });
 }
 
@@ -208,7 +216,7 @@ function geocodeAndMarkAddress(title, address, pic_url) {
       map.panTo(results[0].geometry.location);
       var marker = new google.maps.Marker({
         map: map,
-        // animation: google.maps.Animation.BOUNCE,
+        animation: google.maps.Animation.DROP,
         position: results[0].geometry.location,
       });
 
