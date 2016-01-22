@@ -79,10 +79,10 @@ function searchListener (title) {
       // myLoop();
 
 
-      var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
+      var html = '<li id="' + getElemId(title) + '" > <a href="#" onclick="selectMovie (\'' + title.replace('\'', '\\\'') + '\');" ><img id="' + getElemId(title) + '_image" class="blue_border" src="' + pic_url + '" alt="' + title + '" /> <a href="#" onclick="deleteMovie (\'' + title.replace('\'', '\\\'') + '\');" class="delete"><i class="fa fa-times-circle"></i></a> </a></li>';
       $('.movie_list').append(html)
       movies_count += 1;
-      $('.movie_list').width(movies_count * 110);
+      $('.movie_list').width(movies_count * 115);
       // TODO: scrolling $('#selected_movies').scrollLeft = movies_count * 110;
       selectMovie(title);
       $('#search_text').val('');
@@ -97,16 +97,11 @@ function bounceMarkers (title) {
     for (i = 0; i < len; i++) {
       var marker = markers[title][i];
       marker.setAnimation(google.maps.Animation.BOUNCE);
-      // if (marker.getAnimation() !== null) {
-      //   marker.setAnimation(null);
-      // } else {
-      //   marker.setAnimation(google.maps.Animation.BOUNCE);
-      // }
     }
     setTimeout(function() {
       for (i = 0; i < len; i++) {
         var marker = markers[title][i];
-        marker.setAnimation(null); // this stops the bouncing
+        marker.setAnimation(null);
       }
     }, 700);
   }
@@ -116,7 +111,7 @@ function deleteMovie (title) {
   deleteMarkers(title);
   $('#' + getElemId(title)).remove();
   movies_count -= 1;
-  $('.movie_list').width(movies_count * 110);
+  $('.movie_list').width(movies_count * 115);
 
 }
 
@@ -156,7 +151,7 @@ function populateAutocomplete () {
     $("#search_text").autocomplete( {
       source: titles,
       open: function(event, ui) {
-        $('.ui-autocomplete').off('menufocus hover mouseover mouseenter');
+        $('.ui-autocomplete').off('menufocus hover mouseover');
       },
       autoFocus: true
     });
@@ -171,6 +166,7 @@ function populateAutocomplete () {
       }
     });
     searchListener('Godzilla'); //TODO: remove
+    searchListener('Star Trek IV: The Voyage Home');
   });
 }
 
@@ -198,6 +194,8 @@ function messageBox (title, locations) {
   if (error) {
     $('#message_bar').html(msg);
     $('#message_bar').show();
+  } else {
+    $('#message_bar').hide();
   }
   return error;
 }
