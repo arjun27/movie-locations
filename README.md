@@ -14,7 +14,7 @@ The code calls the SF OpenData API for movie locations and The Movie Database AP
 #### Functional choices
 * The dataset has 1241 locations for 273 movies. To display all the information would be meaningless to the user. Therefore, the app has been designed so that it is easy for a user to observe movie locations of selected movies.
 * The user can search for movie names, and search has been assisted by autocomplete.
-* A horizontal scroll carousel for movie posters to easily manage multiple movies and highlight specific locations has been provided at the bottom.
+* A horizontal scroll carousel for movie posters - to easily manage multiple movies and highlight specific locations - has been provided at the bottom.
 * In addition to desktop screens, the app is well suited to small mobile screens, to be used on-the-go.
 
 #### Technical choices
@@ -22,7 +22,7 @@ The code calls the SF OpenData API for movie locations and The Movie Database AP
 
   The app uses Google Maps API (for map display) and The Movie Database API (for movie posters). Both these APIs have usage limits which are defined per IP address. Therefore, the app is designed to keep computation on the client side only.
 
-  The free usage tier of Google Maps API restrict calls to 10 entries per second. While it is possible to overcome this by introducing delays in API calls, it has been disabled as it affected the UX. Caching could not be implemented do to time constraints. 
+  The free tier of Google Maps API restricts usage to 10 calls per second. While it is possible to overcome this by introducing delays in API calls, it has been disabled as it affected the UX. Caching could not be implemented due to time constraints. 
 * __Back end__
 
   The app uses Django as the web framework, with Gunicorn as the production server. Whitenoise is used to serve static files. The app is hosted on a free web dyno on Heroku. Django was chosen because it fulfills the app requirements, is easy to maintain and deploy on Heroku.
@@ -32,7 +32,7 @@ The code calls the SF OpenData API for movie locations and The Movie Database AP
   __Automated testing__: a basic test case to check response of root URL has been added.
 * __Front end__
 
-  I wrote the front-end HTML, CSS and JS. API calls where made to SF OpenData (for movie locations data), Google Maps (map operations) and The Movie Database (movie poster data) whenever required. Jquery was used for two reasons: autocomplete and handling asynchronous methods.
+  I wrote the front-end HTML, CSS and JS. API calls were made to SF OpenData (for movie locations data), Google Maps (map operations) and The Movie Database (movie poster data) wherever required. Jquery was used for two reasons: autocomplete and handling asynchronous methods.
 
   __Autocomplete__: The app search uses the Jquery [widget](https://jqueryui.com/autocomplete/) to implement autocomplete. The elements of the widget were styled in CSS to suit the app UI.
 
