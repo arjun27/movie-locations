@@ -6,6 +6,6 @@ urlpatterns = patterns('',
     # url(r'^$', 'movie_locations_project.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
 
-    url(r'^', include('movie_locations.urls', namespace='movie_locations')),
+    url(r'^', include('movie_locations.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
