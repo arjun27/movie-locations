@@ -4,12 +4,14 @@ var movies_count = 0;
 var titles = [];
 var bounds;
 var infowindows = [];
-var imgWidth;
+var imgWidth, defaultZoom;
+var sfCenter = {lat: 37.769, lng: -122.446};
 
 function initMap() {
+  defaultZoom = $(window).width() < 500 ? 11 : 12;
   map = new google.maps.Map(document.getElementById('map'), {
-    zoom: 12,
-    center: {lat: 37.769, lng: -122.446},
+    zoom: defaultZoom,
+    center: sfCenter,
     disableDefaultUI: true,
     zoomControl: true,
     zoomControlOptions: {
@@ -205,8 +207,8 @@ function deleteMarkers (title) {
   }
   bounds = new_bounds;
   if (bounds.isEmpty()) {
-    map.setZoom (12);
-    map.setCenter ({lat: 37.769, lng: -122.446});
+    map.setZoom (defaultZoom);
+    map.setCenter (sfCenter);
   }
   else { 
     customFitBounds();
