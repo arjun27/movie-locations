@@ -33,6 +33,10 @@ function initMap() {
 }
 
 function searchListener (title) {
+  if (title == '') {
+    messageBox(title, null);
+    return;
+  }
   var api_url = 'https://data.sfgov.org/resource/wwmu-gmzc.json?title=' + title;
   var pic_api_url = 'https://api.themoviedb.org/3/search/movie?api_key=5b2d8059a779795a80fdb7e4088315ad&query=' + title;
   var get1 = $.get(api_url);
@@ -124,7 +128,10 @@ function messageBox (title, locations) {
   console.log('messageBox title', title);
   var error = false;
   var msg = '';
-  if (!locations) {
+  if (title == '') {
+    error = true;
+    msg = 'Please enter a movie title';
+  } else if (!locations) {
     error = true;
     msg = '<strong>' + title + '</strong> was shot in SF, but we don\'t have location data.';
   } else {
@@ -198,5 +205,5 @@ function selectMovie (title) {
 }
 
 function getElemId (title) {
-  return 'selected_' + title.replace(new RegExp(' ', 'g'), '').replace(new RegExp(':', 'g'), ''); 
+  return 'selected_' + title.replace(/[^\w]/gi, '');
 }
